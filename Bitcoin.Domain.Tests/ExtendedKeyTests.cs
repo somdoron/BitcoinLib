@@ -42,5 +42,18 @@ namespace Bitcoin.Domain.Tests
             Assert.Equal(key.SerliazePublicKey(true), "xpub6H1LXWLaKsWFhvm6RVpEL9P4KfRZSW7abD2ttkWP3SSQvnyA8FSVqNTEcYFgJS2UaFcxupHiYkro49S8yGasTvXEYBVPamhGW6cFJodrTHy");
             Assert.Equal(key.SerializePrivateKey(true), "xprvA41z7zogVVwxVSgdKUHDy1SKmdb533PjDz7J6N6mV6uS3ze1ai8FHa8kmHScGpWmj4WggLyQjgPie1rFSruoUihUZREPSL39UNdE3BBDu76");    
         }
+
+        [Fact]
+        public void DeserializeKey()
+        {
+            ExtendedKey key = ExtendedKey.CreateMaster("000102030405060708090a0b0c0d0e0f");
+            
+            string privateKeySerialized = key.SerializePrivateKey(true);
+
+            ExtendedKey deserializedKey = ExtendedKey.Deserialze(privateKeySerialized, true);
+
+            Assert.Equal(deserializedKey, key);
+           
+        }
     }
 }

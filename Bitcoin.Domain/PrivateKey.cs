@@ -11,9 +11,7 @@ using Org.BouncyCastle.Math.EC;
 namespace Bitcoin.Domain
 {
     public class PrivateKey
-    {
-        private static readonly X9ECParameters Curve = SecNamedCurves.GetByName("secp256k1");
-
+    {        
         private BigInteger m_key;
         private byte[] m_bytes;
         
@@ -27,12 +25,12 @@ namespace Bitcoin.Domain
             byte[] p = key.ToByteArray();            
 
             Buffer.BlockCopy(p, Math.Max(0, p.Length - 32), m_bytes, Math.Max(0, 32 - p.Length), Math.Min(32, p.Length));
-                                
-            ECPoint q = Curve.G.Multiply(m_key);
+
+            ECPoint q = EllipticCurve.G.Multiply(m_key);
 
             if (compressed)
             {
-                byte[] pubKeyBytes = new FpPoint(Curve.Curve, q.X, q.Y, true).GetEncoded();
+                byte[] pubKeyBytes = new FpPoint(EllipticCurve.Curve, q.X, q.Y, true).GetEncoded();
                 PublicKey = new PublicKey(pubKeyBytes, true);
             }
             else
@@ -60,6 +58,27 @@ namespace Bitcoin.Domain
         {
             get;
             private set;
+        }
+
+        protected bool Equals(PrivateKey other)
+        {
+            return m_key.CompareTo(other.m_key) == 0 && Compressed.Equals(other.Compressed);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((PrivateKey) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((m_key != null ? m_key.GetHashCode() : 0)*397) ^ Compressed.GetHashCode();
+            }
         }
     }
 }
