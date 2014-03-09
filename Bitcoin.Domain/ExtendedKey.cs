@@ -22,6 +22,11 @@ namespace Bitcoin.Domain
         private static readonly SecureRandom Random = new SecureRandom();
         private static readonly X9ECParameters Curve = SecNamedCurves.GetByName("secp256k1");
 
+        private static readonly byte[] VersionMainNetPrivate = new byte[] { 0x04, 0x88, 0xAD, 0xE4 };
+        private static readonly byte[] VersionMainNetPublic = new byte[] { 0x04, 0x88, 0xB2, (byte)0x1E };
+        private static readonly byte[] VersionTestNetPrivate = new byte[] { 0x04, 0x35, 0x83, (byte)0x94 };
+        private static readonly byte[] VersionTestNetPublic = new byte[] { 0x04, 0x35, 0x87, (byte)0xCF };
+
         private const string PreSeed = "Bitcoin seed";
         private const int SeedLength = 256;
 
@@ -107,6 +112,12 @@ namespace Bitcoin.Domain
             return CreateMaster(seed);
         }
 
+        public static ExtendedKey CreateMaster(string hexSeed)
+        {
+            return CreateMaster(HexUtility.StringToByteArray(hexSeed));
+        }
+
+
         public static ExtendedKey CreateMaster(byte[] seed)
         {
             var hmac = new HMACSHA512(Encoding.ASCII.GetBytes(PreSeed));
@@ -117,7 +128,7 @@ namespace Bitcoin.Domain
 
             SplitToLeftRight(i, out il, out ir);
 
-            BigInteger bigInteger = new BigInteger(1,il);
+            BigInteger bigInteger = new BigInteger(1, il);
 
             if (bigInteger.CompareTo(BigInteger.Zero) == 0 || bigInteger.CompareTo(Curve.N) >= 0)
             {
@@ -127,21 +138,35 @@ namespace Bitcoin.Domain
             return new ExtendedKey(new PrivateKey(bigInteger, true), ir, 0, 0, 0);
         }
 
-        public ExtendedKey DeriveChild(uint sequence)
+        public ExtendedKey PrivateDerivation(uint sequence)
         {
-            bool generatePrivate = (sequence & 0x80000000) != 0;
+            return Derive(sequence | 0x80000000);
+        }
 
-            if (generatePrivate && m_privateKey == null)
+        public ExtendedKey PublicDerivation(uint sequence)
+        {
+            if ((sequence & 0x80000000) != 0)
             {
-                throw new InvalidOperationException("cannot derive private key without private key");
+                throw new InvalidOperationException("cannot do public derivation when the MSB is set");
+            }
+
+            return Derive(sequence);
+        }
+
+        public ExtendedKey Derive(uint sequence)
+        {
+            bool privateDerivation = (sequence & 0x80000000) != 0;
+
+            if (privateDerivation && m_privateKey == null)
+            {
+                throw new InvalidOperationException("cannot do private derivation without private key");
             }
 
             HMACSHA512 hmacsha512 = new HMACSHA512(m_chainCode);
             byte[] data;
 
-            if (generatePrivate)
-            {
-                // private key length + 4 for the sequence + 1
+            if (privateDerivation)
+            {                
                 data = new byte[m_privateKey.Length + 4 + 1];
                 data[0] = 0;
                 Buffer.BlockCopy(m_privateKey.ToBytes(), 0, data, 1, m_privateKey.Length);
@@ -174,7 +199,7 @@ namespace Bitcoin.Domain
                 throw new InvalidKeyException();
             }
 
-            if (generatePrivate)
+            if (m_privateKey != null)
             {
                 BigInteger k = m.Add(new BigInteger(1, m_privateKey.ToBytes())).Mod(Curve.N);
 
@@ -191,6 +216,11 @@ namespace Bitcoin.Domain
             {
                 ECPoint q = Curve.G.Multiply(m).Add(Curve.Curve.DecodePoint(m_publicKey.Key));
 
+                if (q.IsInfinity)
+                {
+                    throw new InvalidKeyException();
+                }
+
                 byte[] pubKeyBytes = new FpPoint(Curve.Curve, q.X, q.Y, true).GetEncoded();
 
                 PublicKey publicKey = new PublicKey(pubKeyBytes, true);
@@ -198,12 +228,7 @@ namespace Bitcoin.Domain
                 return new ExtendedKey(publicKey, ir, m_depth + 1, Fingerprint, sequence);
             }
         }
-
-        private static readonly byte[] xprv = new byte[] { 0x04, (byte)0x88, (byte)0xAD, (byte)0xE4 };
-        private static readonly byte[] xpub = new byte[] { 0x04, (byte)0x88, (byte)0xB2, (byte)0x1E };
-        private static readonly byte[] tprv = new byte[] { 0x04, (byte)0x35, (byte)0x83, (byte)0x94 };
-        private static readonly byte[] tpub = new byte[] { 0x04, (byte)0x35, (byte)0x87, (byte)0xCF };
-
+    
         public string SerializePrivateKey(bool mainNet)
         {
             if (m_privateKey == null)
@@ -227,22 +252,22 @@ namespace Bitcoin.Domain
             {
                 if (serailizePrivate)
                 {
-                    stream.Write(xprv, 0, 4);
+                    stream.Write(VersionMainNetPrivate, 0, 4);
                 }
                 else
                 {
-                    stream.Write(xpub, 0, 4);
+                    stream.Write(VersionMainNetPublic, 0, 4);
                 }
             }
             else
             {
                 if (serailizePrivate)
                 {
-                    stream.Write(tprv, 0, 4);
+                    stream.Write(VersionTestNetPrivate, 0, 4);
                 }
                 else
                 {
-                    stream.Write(tpub, 0, 4);
+                    stream.Write(VersionTestNetPublic, 0, 4);
                 }
             }
 

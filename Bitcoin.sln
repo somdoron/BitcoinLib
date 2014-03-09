@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bitcoin.Domain", "Bitcoin.Domain\Bitcoin.Domain.csproj", "{2B3D6D40-8DA1-4C53-9F32-500AB4055885}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "ConsoleApplication1\ConsoleApplication1.csproj", "{708C128D-64A6-4352-BC80-AE49000DD095}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bitcoin.Domain.Tests", "Bitcoin.Domain.Tests\Bitcoin.Domain.Tests.csproj", "{6849390B-9144-48F2-9759-1D8E0C14FE67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,10 @@ Global
 		{2B3D6D40-8DA1-4C53-9F32-500AB4055885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B3D6D40-8DA1-4C53-9F32-500AB4055885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B3D6D40-8DA1-4C53-9F32-500AB4055885}.Release|Any CPU.Build.0 = Release|Any CPU
-		{708C128D-64A6-4352-BC80-AE49000DD095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{708C128D-64A6-4352-BC80-AE49000DD095}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{708C128D-64A6-4352-BC80-AE49000DD095}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{708C128D-64A6-4352-BC80-AE49000DD095}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6849390B-9144-48F2-9759-1D8E0C14FE67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6849390B-9144-48F2-9759-1D8E0C14FE67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6849390B-9144-48F2-9759-1D8E0C14FE67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6849390B-9144-48F2-9759-1D8E0C14FE67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
