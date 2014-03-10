@@ -149,7 +149,7 @@ namespace Bitcoin.Domain
             if (privateDerivation && !HasPrivateKey)
             {
                 throw new InvalidOperationException("cannot do private derivation without private key");
-            }
+            }            
 
             HMACSHA512 hmacsha512 = new HMACSHA512(m_chainCode);
             byte[] data;
@@ -237,7 +237,7 @@ namespace Bitcoin.Domain
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                using (BigEndianBinaryWriter binaryWriter = new BigEndianBinaryWriter(stream))
+                using (BinaryWriter binaryWriter = new BinaryWriter(stream))
                 {
                     if (mainNet)
                     {
@@ -263,8 +263,8 @@ namespace Bitcoin.Domain
                     }
 
                     binaryWriter.Write((byte) (Depth & 0xff));
-                    binaryWriter.Write(m_parentFingerprint);                    
-                    binaryWriter.Write(Sequence);                                        
+                    binaryWriter.WriteNetworkOrder(m_parentFingerprint);
+                    binaryWriter.WriteNetworkOrder(Sequence);                                        
                     binaryWriter.Write(m_chainCode);
 
                     if (serailizePrivate)
@@ -286,7 +286,7 @@ namespace Bitcoin.Domain
         {
             using (Stream stream = new MemoryStream(BytesUtility.FromBase58WithChecksum(serializedKey)))
             {
-                using (BigEndianBinaryReader binaryReader = new BigEndianBinaryReader(stream))
+                using (BinaryReader binaryReader = new BinaryReader(stream))
                 {
                     bool isMainnet;
                     bool isPrivateKey;
@@ -325,8 +325,8 @@ namespace Bitcoin.Domain
 
                     byte depth = binaryReader.ReadByte();
 
-                    int parentFingerprint = binaryReader.ReadInt32();
-                    uint sequence = binaryReader.ReadUInt32();
+                    int parentFingerprint = binaryReader.ReadInt32NetworkOrder();
+                    uint sequence = binaryReader.ReadUInt32NetworkOrder();
 
                     byte[] chainCode = binaryReader.ReadBytes(32);
                     byte[] key = binaryReader.ReadBytes(33);                    

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -44,7 +45,53 @@ namespace Bitcoin.Domain.Tests
         }
 
         [Fact]
-        public void DeserializeKey()
+        public void TestVector2()
+        {
+            ExtendedKey key = ExtendedKey.CreateMaster("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB");
+            Assert.Equal(key.SerializePrivateKey(true), "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U");
+
+            key = key.PublicDerivation(0); // m/0
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH");
+            Assert.Equal(key.SerializePrivateKey(true), "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt");
+
+            key = key.PrivateDerivation(2147483647); // m/0/2147483647'
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub6ASAVgeehLbnwdqV6UKMHVzgqAG8Gr6riv3Fxxpj8ksbH9ebxaEyBLZ85ySDhKiLDBrQSARLq1uNRts8RuJiHjaDMBU4Zn9h8LZNnBC5y4a");
+            Assert.Equal(key.SerializePrivateKey(true), "xprv9wSp6B7kry3Vj9m1zSnLvN3xH8RdsPP1Mh7fAaR7aRLcQMKTR2vidYEeEg2mUCTAwCd6vnxVrcjfy2kRgVsFawNzmjuHc2YmYRmagcEPdU9");
+
+            key = key.PublicDerivation(1); // m/0/2147483647'/1
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub6DF8uhdarytz3FWdA8TvFSvvAh8dP3283MY7p2V4SeE2wyWmG5mg5EwVvmdMVCQcoNJxGoWaU9DCWh89LojfZ537wTfunKau47EL2dhHKon");
+            Assert.Equal(key.SerializePrivateKey(true), "xprv9zFnWC6h2cLgpmSA46vutJzBcfJ8yaJGg8cX1e5StJh45BBciYTRXSd25UEPVuesF9yog62tGAQtHjXajPPdbRCHuWS6T8XA2ECKADdw4Ef");
+
+            key = key.PrivateDerivation(2147483646); // m/0/2147483647'/1/2147483646'
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub6ERApfZwUNrhLCkDtcHTcxd75RbzS1ed54G1LkBUHQVHQKqhMkhgbmJbZRkrgZw4koxb5JaHWkY4ALHY2grBGRjaDMzQLcgJvLJuZZvRcEL");
+            Assert.Equal(key.SerializePrivateKey(true), "xprvA1RpRA33e1JQ7ifknakTFpgNXPmW2YvmhqLQYMmrj4xJXXWYpDPS3xz7iAxn8L39njGVyuoseXzU6rcxFLJ8HFsTjSyQbLYnMpCqE2VbFWc");
+
+            key = key.PublicDerivation(2); // m/0/2147483647'/1/2147483646'/2
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub6FnCn6nSzZAw5Tw7cgR9bi15UV96gLZhjDstkXXxvCLsUXBGXPdSnLFbdpq8p9HmGsApME5hQTZ3emM2rnY5agb9rXpVGyy3bdW6EEgAtqt");
+            Assert.Equal(key.SerializePrivateKey(true), "xprvA2nrNbFZABcdryreWet9Ea4LvTJcGsqrMzxHx98MMrotbir7yrKCEXw7nadnHM8Dq38EGfSh6dqA9QWTyefMLEcBYJUuekgW4BYPJcr9E7j");    
+        }
+
+        [Fact]
+        public void DeriveFromPublicKey()
+        {
+            ExtendedKey extendedPrivateKey = 
+                ExtendedKey.CreateMaster("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
+            ExtendedKey extendedPublicKey = ExtendedKey.Deserialze(extendedPrivateKey.SerliazePublicKey(true), true);
+
+            ExtendedKey key = extendedPublicKey.PublicDerivation(0); // m/0
+
+            Assert.Equal(key.SerliazePublicKey(true), "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH");
+        }
+
+        [Fact]
+        public void DeserializePrivateKey()
         {
             ExtendedKey key = ExtendedKey.CreateMaster("000102030405060708090a0b0c0d0e0f");
             
@@ -52,8 +99,38 @@ namespace Bitcoin.Domain.Tests
 
             ExtendedKey deserializedKey = ExtendedKey.Deserialze(privateKeySerialized, true);
 
+            Assert.Equal(deserializedKey, key);           
+        }
+        
+        [Fact]
+        public void DeserializePublicKey()
+        {
+            ExtendedKey key = ExtendedKey.CreateMaster("000102030405060708090a0b0c0d0e0f");
+
+            string publicKeySerialized = key.SerliazePublicKey(true);
+
+            ExtendedKey deserializedKey = ExtendedKey.Deserialze(publicKeySerialized, true);
+
+            Assert.Equal(deserializedKey.HasPrivateKey, false);
+            Assert.Equal(deserializedKey.PublicKey, key.PublicKey);
+            Assert.Equal(deserializedKey.Depth, key.Depth);
+            Assert.Equal(deserializedKey.Fingerprint, key.Fingerprint);
+            Assert.Equal(deserializedKey.Sequence, key.Sequence);
+        }
+
+        [Fact]
+        public void DeserializeChild()
+        {
+            ExtendedKey extendedPrivateKey =
+               ExtendedKey.CreateMaster("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
+
+            ExtendedKey key = extendedPrivateKey.PublicDerivation(1); // m/1
+
+            string serializedKey = key.SerializePrivateKey(true);
+
+            ExtendedKey deserializedKey = ExtendedKey.Deserialze(serializedKey, true);
+
             Assert.Equal(deserializedKey, key);
-           
         }
     }
 }

@@ -42,12 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EllipticCurve.cs" />
+    <Compile Include="Block\BlockHeader.cs" />
+    <Compile Include="Wallet\Account.cs" />
+    <Compile Include="Wallet\Address.cs" />
+    <Compile Include="Block\Block.cs" />
     <Compile Include="ExtendedKey.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="PrivateKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKey.cs" />
+    <Compile Include="Transaction.cs" />
+    <Compile Include="Wallet\HDWallet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

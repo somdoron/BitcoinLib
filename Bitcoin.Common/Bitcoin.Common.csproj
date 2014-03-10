@@ -42,9 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="BigEndianBinaryWriter.cs" />
+    <Compile Include="BinaryWriterExtensions.cs" />
     <Compile Include="BytesUtility.cs" />
+    <Compile Include="EllipticCurve.cs" />
+    <Compile Include="HashUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
