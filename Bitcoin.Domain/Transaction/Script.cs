@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bitcoin.Domain.Wallet
+namespace Bitcoin.Domain.Transaction
 {
-    public class Account
+    public class Script
     {
     }
 }

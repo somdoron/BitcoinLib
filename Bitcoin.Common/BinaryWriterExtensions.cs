@@ -12,6 +12,11 @@ namespace Bitcoin.Common
 {
     public static class BinaryExtensions
     {
+        public static ImmutableByteArray ToByteArray(this MemoryStream stream)
+        {
+            return new ImmutableByteArray(stream.ToArray());
+        }
+
         public static void WriteNetworkOrder(this BinaryWriter writer, int value)
         {
             int fixedValue = IPAddress.HostToNetworkOrder(value);
@@ -37,6 +42,21 @@ namespace Bitcoin.Common
             writer.Write(fixedValue);
         }
 
+        public static void WriteNetworkOrder(this BinaryWriter writer, Int64 n)
+        {
+
+        }
+
+        public static void Write(this BinaryWriter writer, Sha256Hash hash)
+        {
+            
+        }       
+
+        public static void WriteVarInt(this BinaryWriter writer, int n)
+        {
+            
+        }
+
         public static uint ReadUInt32NetworkOrder(this BinaryReader reader)
         {
             uint value = reader.ReadUInt32();
@@ -53,16 +73,6 @@ namespace Bitcoin.Common
         {
             return (value & 0x000000FFU) << 24 | (value & 0x0000FF00U) << 8 |
                        (value & 0x00FF0000U) >> 8 | (value & 0xFF000000U) >> 24;
-        }
-
-        public static void Write(this BinaryWriter writer, BigInteger value, bool reversed = true)
-        {
-            byte[] bytes = value.ToByteArray();
-
-            if (reversed)
-                Array.Reverse(bytes);
-
-            writer.Write(value.ToByteArray());
-        }
+        }        
     }
 }

@@ -43,8 +43,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryWriterExtensions.cs" />
+    <Compile Include="ByteArray.cs" />
     <Compile Include="BytesUtility.cs" />
     <Compile Include="EllipticCurve.cs" />
+    <Compile Include="Sha256Hash.cs" />
     <Compile Include="HashUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

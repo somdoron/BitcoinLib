@@ -42,17 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Block\BlockHeader.cs" />
-    <Compile Include="Wallet\Account.cs" />
-    <Compile Include="Wallet\Address.cs" />
+    <Compile Include="Block\IBlockHeader.cs" />
+    <Compile Include="Transaction\Script.cs" />
+    <Compile Include="Transaction\Serializer\ScriptSerializer.cs" />
+    <Compile Include="Transaction\Serializer\TransactionOutpointSerializer.cs" />
+    <Compile Include="Transaction\TransactionInput.cs" />
+    <Compile Include="Transaction\Serializer\TransactionInputSerializer.cs" />
+    <Compile Include="Transaction\TransactionOutPoint.cs" />
+    <Compile Include="Transaction\TransactionOutput.cs" />
+    <Compile Include="Transaction\Serializer\TransactionOutputSerializer.cs" />
+    <Compile Include="Transaction\Serializer\TransactionSerializer.cs" />
     <Compile Include="Block\Block.cs" />
     <Compile Include="ExtendedKey.cs" />
     <Compile Include="InvalidKeyException.cs" />
     <Compile Include="PrivateKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicKey.cs" />
-    <Compile Include="Transaction.cs" />
-    <Compile Include="Wallet\HDWallet.cs" />
+    <Compile Include="Transaction\Transaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
